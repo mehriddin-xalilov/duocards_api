@@ -9,6 +9,7 @@ use App\Http\Requests\Test\UpdateTestRequest;
 use App\Http\Repositories\v1\TestRepository;
 use Illuminate\Http\JsonResponse;
 use App\Models\Test;
+use Illuminate\Support\Facades\Gate;
 /**
  * @group Test
  *
@@ -45,6 +46,8 @@ class TestController extends Controller
 
     public function adminIndex(Request $request)
     {
+        Gate::authorize('tests.view');
+
         return $this->testRepository->adminIndex($request);
     }
 
@@ -84,6 +87,8 @@ class TestController extends Controller
 
     public function store(StoreTestRequest $request): JsonResponse
     {
+        Gate::authorize('tests.create');
+
         return $this->testRepository->store($request);
     }
 
@@ -108,6 +113,8 @@ class TestController extends Controller
 
     public function update(UpdateTestRequest $request, Test $test): JsonResponse
     {
+        Gate::authorize('tests.update');
+
          return $this->testRepository->update($request, $test);
     }
 
@@ -122,6 +129,8 @@ class TestController extends Controller
 
     public function destroy(Test $test): JsonResponse
     {
+        Gate::authorize('tests.delete');
+
         return  $this->testRepository->destroy($test);
     }
 }

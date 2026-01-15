@@ -9,6 +9,8 @@ use App\Http\Requests\Level\UpdateLevelRequest;
 use App\Http\Repositories\v1\LevelRepository;
 use Illuminate\Http\JsonResponse;
 use App\Models\Level;
+use Illuminate\Support\Facades\Gate;
+
 /**
  * @group Level
  *
@@ -16,18 +18,16 @@ use App\Models\Level;
 class LevelController extends Controller
 {
 
-    public function __construct(public LevelRepository $levelRepository)
-    {
-    }
+    public function __construct(public LevelRepository $levelRepository) {}
 
     /**
-    * Level Get all
-    *
-    * @response {
+     * Level Get all
+     *
+     * @response {
     {{response}}
-    * }
-    * @return JsonResponse
-    */
+     * }
+     * @return JsonResponse
+     */
 
     public function index(Request $request)
     {
@@ -35,31 +35,32 @@ class LevelController extends Controller
     }
 
     /**
-    * Level adminIndex get All
-    *
-    * @response {
+     * Level adminIndex get All
+     *
+     * @response {
     {{response}}
-    * }
-    * @return JsonResponse
-    */
+     * }
+     * @return JsonResponse
+     */
 
     public function adminIndex(Request $request)
     {
+        Gate::authorize('levels.view');
         return $this->levelRepository->adminIndex($request);
     }
 
     /**
-    * Level view
-    *
-    * @queryParam id required
-    *
-    * @param Request $request
-    * @param int     $id
-    * @return JsonResponse
-    * @response {
+     * Level view
+     *
+     * @queryParam id required
+     *
+     * @param Request $request
+     * @param int     $id
+     * @return JsonResponse
+     * @response {
     {{response}}
-    * }
-    */
+     * }
+     */
 
     public function show(Request $request, Level $level): JsonResponse
     {
@@ -67,38 +68,40 @@ class LevelController extends Controller
     }
 
     /**
-    * Level create
-    *
-         * @bodyParam name json
+     * Level create
+     *
+     * @bodyParam name json
      * @bodyParam type integer
 
-    *
-    * @param StoreLevelRequest $request
-    * @return JsonResponse
-    */
+     *
+     * @param StoreLevelRequest $request
+     * @return JsonResponse
+     */
 
     public function store(StoreLevelRequest $request): JsonResponse
     {
+        Gate::authorize('levels.create');
         return $this->levelRepository->store($request);
     }
 
     /**
-    * Level update
-    *
-    * @queryParam level required
-    *
-         * @bodyParam name json
+     * Level update
+     *
+     * @queryParam level required
+     *
+     * @bodyParam name json
      * @bodyParam type integer
 
-    *
-    * @param UpdateLevelRequest $request
-    * @param Level $level
-    * @return JsonResponse
-    */
+     *
+     * @param UpdateLevelRequest $request
+     * @param Level $level
+     * @return JsonResponse
+     */
 
     public function update(UpdateLevelRequest $request, Level $level): JsonResponse
     {
-         return $this->levelRepository->update($request, $level);
+        Gate::authorize('levels.update');
+        return $this->levelRepository->update($request, $level);
     }
 
     /**
@@ -112,6 +115,7 @@ class LevelController extends Controller
 
     public function destroy(Level $level): JsonResponse
     {
-        return  $this->levelRepository->destroy($level);
+        Gate::authorize('levels.delete');
+        return $this->levelRepository->destroy($level);
     }
 }

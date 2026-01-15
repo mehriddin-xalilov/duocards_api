@@ -9,6 +9,7 @@ use App\Http\Requests\Answer\UpdateAnswerRequest;
 use App\Http\Repositories\v1\AnswerRepository;
 use Illuminate\Http\JsonResponse;
 use App\Models\Answer;
+use Illuminate\Support\Facades\Gate;
 /**
  * @group Answer
  *
@@ -45,6 +46,8 @@ class AnswerController extends Controller
 
     public function adminIndex(Request $request)
     {
+        Gate::authorize('answers.view');
+
         return $this->answerRepository->adminIndex($request);
     }
 
@@ -81,6 +84,8 @@ class AnswerController extends Controller
 
     public function store(StoreAnswerRequest $request): JsonResponse
     {
+        Gate::authorize('answers.create');
+
         return $this->answerRepository->store($request);
     }
 
@@ -102,6 +107,8 @@ class AnswerController extends Controller
 
     public function update(UpdateAnswerRequest $request, Answer $answer): JsonResponse
     {
+        Gate::authorize('answers.update');
+
          return $this->answerRepository->update($request, $answer);
     }
 
@@ -116,6 +123,8 @@ class AnswerController extends Controller
 
     public function destroy(Answer $answer): JsonResponse
     {
+        Gate::authorize('answers.delete');
+
         return  $this->answerRepository->destroy($answer);
     }
 }

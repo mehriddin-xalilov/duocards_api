@@ -33,6 +33,7 @@ class UserRepository
     public function adminIndex(Request $request): JsonResponse
     {
         $query = $this->defaultQuery($request);
+        $query->with('roles', 'permissions');
         $this->defaultAllowFilter($query, $request);
         return $this->withPagination($query, $request);
     }
@@ -45,15 +46,31 @@ class UserRepository
 
     public function store(Request $request): JsonResponse
     {
-        $model = User::query()->create($request->all());
+        $data = $request->except('role');
+        $model = User::query()->create($data);
+
+        // Assign role if provided
+        if ($request->has('role')) {
+            $model->syncRoles([$request->role]);
+        }
+
         $this->allowIncludeAndAppend($request, $model);
+        $model->load('roles', 'permissions');
         return okResponse($model);
     }
 
     public function update(Request $request, User $user): JsonResponse
     {
-        $user->update($request->all());
+        $data = $request->except('role');
+        $user->update($data);
+
+        // Update role if provided
+        if ($request->has('role')) {
+            $user->syncRoles([$request->role]);
+        }
+
         $this->allowIncludeAndAppend($request, $user);
+        $user->load('roles', 'permissions');
         return okResponse($user);
     }
 
@@ -105,8 +122,11 @@ class UserRepository
     {
         $user = $request->user();
         $this->allowIncludeAndAppend($request, $user);
+        $user->load('roles');
+        $userArray = $user->toArray();
+        $userArray['permissions'] = $user->getAllPermissions()->pluck('name');
         $data = [
-            'user' => $user,
+            'user' => $userArray,
             'token' => $request->bearerToken(),
         ];
         return okResponse($data);
@@ -122,4 +142,3 @@ class UserRepository
         return okResponse($user);
     }
 }
-

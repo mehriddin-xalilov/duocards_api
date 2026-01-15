@@ -15,9 +15,7 @@ use Throwable;
 
 class AuthController extends Controller
 {
-    public function __construct(public UserRepository $userRepository)
-    {
-    }
+    public function __construct(public UserRepository $userRepository) {}
 
     use QueryBuilderTrait;
 
@@ -32,7 +30,7 @@ class AuthController extends Controller
         ]);
 
         if (!Auth::attempt(['login' => $request->login, 'password' => $request->password])) {
-            return errorResponse(message:("Invalid credentials!"), status: 401);
+            return errorResponse(message: ("Invalid credentials!"), status: 401);
         }
 
         DB::beginTransaction();
@@ -46,9 +44,12 @@ class AuthController extends Controller
         }
 
         $this->allowIncludeAndAppend($request, $user);
+        $user->load('roles');
+        $userArray = $user->toArray();
+        $userArray['permissions'] = $user->getAllPermissions()->pluck('name');
 
         return okResponse([
-            'user' => $user,
+            'user' => $userArray,
             'token' => $accessToken
         ]);
     }
@@ -65,13 +66,15 @@ class AuthController extends Controller
             return errorResponse(message: ("Invalid credentials!"), status: 401);
         }
         $user = Auth::user();
-        if (!$user->userRole()->where('role', Roles::ROLE_ADMIN)->first()) {
-            return errorResponse(status: 403);
+        if (!$user->hasRole('admin')) {
+            return errorResponse(message: 'Unauthorized. Admin role required.', status: 403);
         }
-        $token = $user->createToken($user->login, [$user->role])->accessToken;
+        $token = $user->createToken($user->login)->accessToken;
         $this->allowIncludeAndAppend($request, $user);
+        $userArray = $user->toArray();
+        $userArray['permissions'] = $user->getAllPermissions()->pluck('name');
         return response()->json([
-            'user' => $user,
+            'user' => $userArray,
             'token' => $token
         ]);
     }
@@ -153,5 +156,4 @@ class AuthController extends Controller
             'message' => 'Successfully logged out'
         ]);
     }
-
 }

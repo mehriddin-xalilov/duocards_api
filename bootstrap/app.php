@@ -12,16 +12,45 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
-        channels: __DIR__.'/../routes/channels.php',
+        web: __DIR__ . '/../routes/web.php',
+        api: __DIR__ . '/../routes/api.php',
+        commands: __DIR__ . '/../routes/console.php',
+        channels: __DIR__ . '/../routes/channels.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->api(prepend: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => __('messages.unauthorized'),
+                ], 403);
+            }
+        });
+
+        $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => __('messages.unauthorized'),
+                ], 403);
+            }
+        });
+
+        $exceptions->render(function (\Illuminate\Auth\Access\AuthorizationException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => __('messages.unauthorized'),
+                ], 403);
+            }
+        });
+
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
@@ -103,5 +132,4 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], $statusCode);
             }
         });
-
     })->create();

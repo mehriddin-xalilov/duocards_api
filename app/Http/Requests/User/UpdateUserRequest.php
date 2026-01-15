@@ -26,13 +26,14 @@ class UpdateUserRequest extends BaseRequest
         return [
             'name' => 'nullable|string|max:255',
             'email_verified_at' => 'nullable|date',
-            'password' => 'required|string|min:6',
+            'password' => 'nullable|string|min:6',
             'email' => 'nullable|string|email|max:255|unique:users,email,' . $userId,
             'login' => 'nullable|string|max:255|unique:users,login,' . $userId,
             'phone' => 'nullable|string|max:20|unique:users,phone,' . $userId,
-            'status' => 'required|integer|in:0,1',
+            'status' => 'nullable|integer|in:0,1',
             'remember_token' => 'nullable|string',
             'photo' => 'nullable|integer|exists:files,id',
+            'role' => 'nullable|string|exists:roles,name',
         ];
     }
 }

@@ -15,6 +15,7 @@ class User extends Authenticatable implements OAuthenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, FileableTrait;
+    use \Spatie\Permission\Traits\HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +24,7 @@ class User extends Authenticatable implements OAuthenticatable
      */
     protected $table = 'users';
     protected mixed $fileableAttributes = ['photo'];
+    protected $guard_name = 'api';
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 
@@ -61,41 +63,7 @@ class User extends Authenticatable implements OAuthenticatable
         ];
     }
 
-    public function userRole(): HasOne
-    {
-        return $this->hasOne(UserRole::class, 'user_id');
-    }
 
-    public function getRoleAttribute()
-    {
-        return $this->userRole?->role;
-    }
 
-    public function detail(): BelongsTo
-    {
-        return $this->BelongsTo(Student::class);
-    }
-
-    public function vacancies()
-    {
-        return $this->hasMany(Vacancy::class);
-    }
-
-    public function vacancyViews()
-    {
-        return $this->hasMany(VacancyView::class);
-    }
-
-    public function vacancyUsers()
-    {
-        return $this->hasMany(VacancyUser::class);
-    }
 
 }
-
-
-
-
-
-
-

@@ -6,6 +6,7 @@ use App\Helpers\Roles;
 use Carbon\CarbonInterval;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,5 +32,14 @@ class AppServiceProvider extends ServiceProvider
             Roles::ROLE_USER => 'user',
         ]);
         Passport::setDefaultScope([Roles::ROLE_SUPER_ADMIN]);
+
+        // Customize Gate authorization denial message to Uzbek
+        Gate::after(function ($user, $ability, $result) {
+            if ($result === false) {
+                throw new \Illuminate\Auth\Access\AuthorizationException(
+                    __('messages.unauthorized')
+                );
+            }
+        });
     }
 }

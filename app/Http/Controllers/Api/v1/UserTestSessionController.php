@@ -9,6 +9,7 @@ use App\Http\Requests\UserTestSession\UpdateUserTestSessionRequest;
 use App\Http\Repositories\v1\UserTestSessionRepository;
 use Illuminate\Http\JsonResponse;
 use App\Models\UserTestSession;
+use Illuminate\Support\Facades\Gate;
 /**
  * @group UserTestSession
  *
@@ -45,6 +46,8 @@ class UserTestSessionController extends Controller
 
     public function adminIndex(Request $request)
     {
+        Gate::authorize('test-sessions.view');
+
         return $this->userTestSessionRepository->adminIndex($request);
     }
 
@@ -85,6 +88,8 @@ class UserTestSessionController extends Controller
 
     public function store(StoreUserTestSessionRequest $request): JsonResponse
     {
+        Gate::authorize('test-sessions.create');
+
         return $this->userTestSessionRepository->store($request);
     }
 
@@ -110,6 +115,8 @@ class UserTestSessionController extends Controller
 
     public function update(UpdateUserTestSessionRequest $request, UserTestSession $userTestSession): JsonResponse
     {
+        Gate::authorize('test-sessions.update');
+
          return $this->userTestSessionRepository->update($request, $userTestSession);
     }
 
@@ -124,6 +131,8 @@ class UserTestSessionController extends Controller
 
     public function destroy(UserTestSession $userTestSession): JsonResponse
     {
+        Gate::authorize('test-sessions.delete');
+
         return  $this->userTestSessionRepository->destroy($userTestSession);
     }
 }

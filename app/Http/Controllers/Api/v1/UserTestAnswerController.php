@@ -9,6 +9,7 @@ use App\Http\Requests\UserTestAnswer\UpdateUserTestAnswerRequest;
 use App\Http\Repositories\v1\UserTestAnswerRepository;
 use Illuminate\Http\JsonResponse;
 use App\Models\UserTestAnswer;
+use Illuminate\Support\Facades\Gate;
 /**
  * @group UserTestAnswer
  *
@@ -45,6 +46,8 @@ class UserTestAnswerController extends Controller
 
     public function adminIndex(Request $request)
     {
+        Gate::authorize('test-answers.view');
+
         return $this->userTestAnswerRepository->adminIndex($request);
     }
 
@@ -83,6 +86,8 @@ class UserTestAnswerController extends Controller
 
     public function store(StoreUserTestAnswerRequest $request): JsonResponse
     {
+        Gate::authorize('test-answers.create');
+
         return $this->userTestAnswerRepository->store($request);
     }
 
@@ -106,6 +111,8 @@ class UserTestAnswerController extends Controller
 
     public function update(UpdateUserTestAnswerRequest $request, UserTestAnswer $userTestAnswer): JsonResponse
     {
+        Gate::authorize('test-answers.update');
+
          return $this->userTestAnswerRepository->update($request, $userTestAnswer);
     }
 
@@ -120,6 +127,8 @@ class UserTestAnswerController extends Controller
 
     public function destroy(UserTestAnswer $userTestAnswer): JsonResponse
     {
+        Gate::authorize('test-answers.delete');
+
         return  $this->userTestAnswerRepository->destroy($userTestAnswer);
     }
 }

@@ -25,14 +25,14 @@ class StoreUserRequest extends BaseRequest
         return [
             'name' => 'required|string',
             'email_verified_at' => 'nullable|date',
-            'password' => 'required|string',
-            'email' => 'nullable|string|unique:users,email',
-            'login' => 'nullable|string|unique:users,login',
-            'phone' => 'required|string|unique:users,phone',
-            'status' => 'required|integer|in:0,1',
+            'password' => 'required|string|min:6',
+            'email' => 'nullable|string|email|unique:users,email',
+            'login' => 'required|string|unique:users,login',
+            'phone' => 'nullable|string|unique:users,phone',
+            'status' => 'nullable|integer|in:0,1',
             'remember_token' => 'nullable|string',
-            'photo'=>'nullable|integer|exists:files,id',
-            'role' => 'required|in:' . implode(',', Roles::asArray()),
+            'photo' => 'nullable|integer|exists:files,id',
+            'role' => 'required|string|exists:roles,name',
         ];
     }
 }

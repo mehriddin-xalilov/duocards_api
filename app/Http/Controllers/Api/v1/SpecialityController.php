@@ -9,6 +9,7 @@ use App\Http\Requests\Speciality\UpdateSpecialityRequest;
 use App\Http\Repositories\v1\SpecialityRepository;
 use Illuminate\Http\JsonResponse;
 use App\Models\Speciality;
+use Illuminate\Support\Facades\Gate;
 /**
  * @group Speciality
  *
@@ -45,6 +46,8 @@ class SpecialityController extends Controller
 
     public function adminIndex(Request $request)
     {
+        Gate::authorize('specialities.view');
+
         return $this->specialityRepository->adminIndex($request);
     }
 
@@ -79,6 +82,8 @@ class SpecialityController extends Controller
 
     public function store(StoreSpecialityRequest $request): JsonResponse
     {
+        Gate::authorize('specialities.create');
+
         return $this->specialityRepository->store($request);
     }
 
@@ -98,6 +103,8 @@ class SpecialityController extends Controller
 
     public function update(UpdateSpecialityRequest $request, Speciality $speciality): JsonResponse
     {
+        Gate::authorize('specialities.update');
+
          return $this->specialityRepository->update($request, $speciality);
     }
 
@@ -112,6 +119,8 @@ class SpecialityController extends Controller
 
     public function destroy(Speciality $speciality): JsonResponse
     {
+        Gate::authorize('specialities.delete');
+
         return  $this->specialityRepository->destroy($speciality);
     }
 }

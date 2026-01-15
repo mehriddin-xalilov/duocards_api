@@ -13,6 +13,8 @@ Route::group(['prefix' => 'v1/admin', 'middleware' => ['auth:api']], function ()
         Route::put('/{user}', [App\Http\Controllers\Api\v1\UserController::class, 'update'])->whereNumber('user');
         Route::get('/{user}', [App\Http\Controllers\Api\v1\UserController::class, 'show'])->whereNumber('user');
         Route::delete('/{user}', [App\Http\Controllers\Api\v1\UserController::class, 'destroy'])->whereNumber('user');
+        Route::post('/{user}/assign-role', [App\Http\Controllers\Api\v1\UserController::class, 'assignRole'])->whereNumber('user');
+        Route::post('/{user}/sync-permissions', [App\Http\Controllers\Api\v1\UserController::class, 'syncPermissions'])->whereNumber('user');
     });
     Route::prefix('categories')->group(function () {
         Route::get('/', [App\Http\Controllers\Api\v1\CategoryController::class, 'adminIndex']);
@@ -71,5 +73,19 @@ Route::group(['prefix' => 'v1/admin', 'middleware' => ['auth:api']], function ()
         Route::put('/{usertestanswer}', [App\Http\Controllers\Api\v1\UserTestAnswerController::class, 'update'])->whereNumber('usertestanswer');
         Route::get('/{usertestanswer}', [App\Http\Controllers\Api\v1\UserTestAnswerController::class, 'show'])->whereNumber('usertestanswer');
         Route::delete('/{usertestanswer}', [App\Http\Controllers\Api\v1\UserTestAnswerController::class, 'destroy'])->whereNumber('usertestanswer');
+    });
+
+    // Roles & Permissions Management
+    Route::prefix('roles')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\v1\RoleController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\v1\RoleController::class, 'store']);
+        Route::get('/{role}', [App\Http\Controllers\Api\v1\RoleController::class, 'show'])->whereNumber('role');
+        Route::put('/{role}', [App\Http\Controllers\Api\v1\RoleController::class, 'update'])->whereNumber('role');
+        Route::delete('/{role}', [App\Http\Controllers\Api\v1\RoleController::class, 'destroy'])->whereNumber('role');
+    });
+
+    Route::prefix('permissions')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\v1\PermissionController::class, 'index']);
+        Route::get('/{permission}', [App\Http\Controllers\Api\v1\PermissionController::class, 'show'])->whereNumber('permission');
     });
 });
